@@ -217,7 +217,7 @@ body:has(#cover.on){background:radial-gradient(circle at 20% 10%,#2563eb 0,#1e40
    Selama belum diganti, aplikasi tetap jalan seperti biasa (data hanya
    disimpan di perangkat), tanpa terhubung ke Google Sheets.
    ================================================================ */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwgJqddOkRM6sHahhvDVrfQx43CGa2J9dZ4BjKmP7fehkyXxX3YBiQPs1S1ImWPVBn0hw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxSf-ELhnvjuYj3HoyPR2CJGaAEBhYlYqIm2U5r7UpKPhwoqvv7KpCYR1c3jxj5X1MEqA/exec";
 
 const $=id=>document.getElementById(id),S={n:'',k:'',learn:[],ls:0,ps:0,pok:0,pd:false,rs:0,rpts:0,lv:[0,0,0],rok:0,gi:0};
 const mj=e=>window.MathJax&&MathJax.typesetPromise&&MathJax.typesetPromise([e||document.body]).catch(()=>{});
@@ -517,7 +517,10 @@ async function flushOutbox(notify){
  finally{obBusy=0}
  if(notify){if(fail)say('📡 Sinyal kurang baik. Hasilmu tersimpan dan akan dikirim otomatis ke guru.');else if(sent)say('☁️ Hasil terkirim ke guru ✅')}}
 addEventListener('online',()=>flushOutbox(false));
-setTimeout(()=>flushOutbox(false),3000);
+setTimeout(()=>{flushOutbox(false);initSoal()},3000);
+/* isi awal sheet "Data Soal" otomatis (tanpa PIN; backend mengabaikan bila sheet sudah berisi) */
+async function initSoal(){if(!GAS_ON())return;try{if(localStorage.getItem('mpi_soal_init')=='1')return}catch(e){}
+ try{await gasPost({action:'initSoal',rows:soalRows()});try{localStorage.setItem('mpi_soal_init','1')}catch(e){}}catch(e){}}
 
 /* ---- bank soal Bermain & Berlatih -> baris sheet "Data Soal" ---- */
 function soalRows(){
@@ -538,7 +541,7 @@ async function cloudSyncSoal(){
  try{let j=await gasPost({action:'syncSoal',pin:S.gpin,rows:soalRows()});setCloud('☁️ Sheet “Data Soal” diperbarui: '+j.count+' soal • '+fdt(Date.now()))}
  catch(e){setCloud('⚠️ Gagal mengirim soal: '+e.message)}}
 /* ---- tarik rekap dari sheet "Hasil" dan gabungkan ke dashboard ---- */
-async function cloudPull(auto){
+async function cloudPull(auto,again){
  if(!GAS_ON()){if(auto)setCloud('ℹ️ GAS_URL belum diisi: data hanya tersimpan di perangkat ini.');else alert('GAS_URL belum diisi. Isi dulu di baris paling atas script index.html.');return}
  if(!S.gpin)return;
  setCloud('⏳ Mengambil data dari Google Sheets…');
@@ -549,7 +552,10 @@ async function cloudPull(auto){
   dbSet(db);tchRender();
   let st='☁️ Tersinkron: '+n+' hasil dimuat dari Google Sheets • '+fdt(Date.now());setCloud(st);
   if(!j.soalRows){try{let k=await gasPost({action:'syncSoal',pin:S.gpin,rows:soalRows()});setCloud(st+' • Data Soal dibuat ('+k.count+' soal)')}catch(e){}}
- }catch(e){setCloud('⚠️ Gagal memuat dari Google Sheets: '+e.message+(/PIN/.test(e.message)?'':' (periksa GAS_URL & izin akses Web App)'))}}
+ }catch(e){
+  if(/tidak cocok/.test(e.message)&&!again){let p=prompt('PIN Google Sheets tidak cocok dengan PIN login.\nMasukkan nilai PIN_GURU yang tertulis di Code.gs:');
+   if(p){S.gpin=p.trim();return cloudPull(auto,1)}}
+  setCloud('⚠️ Gagal memuat dari Google Sheets: '+e.message+(/PIN/.test(e.message)?'':' (periksa GAS_URL & izin akses Web App)'))}}
 
 /* ===== NOTIFIKASI CAMAR ===== */
 var CM_MSG=["Kwek kwek! 🐦 Aku Camar Kecil, kurir pesan khusus buat kamu. Pesan pertama: kamu hebat, karena kamu mau membuka pelajaran ini 💙","Katanya matematika itu susah… tapi kamu jauh lebih kuat dari soal mana pun. Camar percaya sama kamu! 🥹","Nggak apa-apa salah hitung. Camar aja sering salah arah, ujung-ujungnya malah nyasar ke warung ikan 🐟😅 Yang penting kamu terus jalan!","Ada yang diam-diam mendoakan kamu: orang tuamu, gurumu… dan satu camar kepo ini 🤲","Jangan bandingkan dirimu dengan orang lain. Ombak saja punya irama sendiri 🌊 Pelan-pelan juga sampai kok.","Garis x dan y itu awalnya berjauhan, tapi akhirnya bertemu juga. Sama seperti usahamu dan hasilnya. Sabar ya ✨","Titipan dari Pak Guru: “Bapak bangga sama kamu.” Camar cuma menyampaikan, jangan bilang-bilang ya 🤫💌","Capek? Boleh istirahat sebentar. Minum dulu, tarik napas, lalu lanjut lagi. Camar jagain kamu di sini 🫶","Kalau hari ini terasa berat, ingat: kamu nggak sendirian. Ada teman, guru, dan Allah yang selalu bersamamu 🤍"];
