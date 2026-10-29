@@ -222,7 +222,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxeDJcWyFz6Oikc-Yqv1leM
 const $=id=>document.getElementById(id),S={n:'',k:'',learn:[],ls:0,ps:0,pok:0,pd:false,rs:0,rpts:0,lv:[0,0,0],rok:0,gi:0};
 const mj=e=>window.MathJax&&MathJax.typesetPromise&&MathJax.typesetPromise([e||document.body]).catch(()=>{});
 const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-function show(id){if(window.camarHook)camarHook(id);if(window.homeHook)homeHook(id);if(id=='dash'&&!S.guru)id='form';if(id!='play')clearInterval(S.ti);document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');document.body.classList.toggle('gm',id=='dash');scrollTo(0,0);if(id=='menu')menu();if(id=='dash')tchRender();if(S.n)sv();mj($(id))}
+function show(id){if(window.camarHook)camarHook(id);if(window.homeHook)homeHook(id);if(id=='dash'&&!S.guru)id='form';if(id!='play')clearInterval(S.ti);document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');document.body.classList.toggle('gm',id=='dash');scrollTo(0,0);if(id=='menu')menu();if(id=='dash')tchRender();if(S.n)sv();sess(id);mj($(id))}
 function modal(h){$('modc').innerHTML=h+'<div class="center"><button class="btn" onclick="$(\'mod\').classList.remove(\'on\')">Kembali ke Cover</button></div>';$('mod').classList.add('on');mj($('modc'))}
 const AY=[{a:'إِنَّا كُلَّ شَيْءٍ خَلَقْنَاهُ بِقَدَرٍ',r:'QS. Al-Qamar [54]: 49',t:'"Sesungguhnya Kami menciptakan segala sesuatu menurut ukuran."',k:'Segala ciptaan Allah terukur; ada besaran yang berubah (variabel) dan yang tetap (konstanta). Matematika membantu kita membacanya.'},
 {a:'وَأَقِيمُوا الْوَزْنَ بِالْقِسْطِ وَلَا تُخْسِرُوا الْمِيزَانَ',r:'QS. Ar-Rahman [55]: 9',t:'"Dan tegakkanlah timbangan itu dengan adil dan janganlah kamu mengurangi neraca itu."',k:'Persamaan itu seperti timbangan: kedua ruas harus seimbang. Jujur menghitung adalah akhlak mulia.'}];
@@ -290,9 +290,9 @@ const PL=[
 {t:'mc',s:'Seorang peternak di pegunungan Tilamuta memelihara ayam dan kambing di kandang yang sama. Pada pagi hari ia menghitung bahwa seluruh hewan berjumlah 20 ekor, dan jumlah seluruh kaki hewan itu 56. Ia memisalkan banyak ayam dengan $x$ dan banyak kambing dengan $y$, lalu menulis dua persamaan: $x+y=20$ dan $2x+4y=56$. Setiap pagi ia memberi pakan dan air bersih, membersihkan kandang, dan memastikan hewannya sehat, karena ia meyakini bahwa kasih sayang kepada makhluk Allah akan dibalas dengan kebaikan. Perhatikan bahwa kedua persamaan itu memuat informasi berbeda: satu tentang banyak hewan, satu lagi tentang banyak kaki. Informasi seperti ini sering dipakai peternak untuk memeriksa catatan kandangnya agar tidak ada hewan yang terlewat. Pahami makna setiap persamaan sebelum menjawab.',q:'Arti $x+y=20$ adalah…',o:['Total kaki 20','Jumlah ayam dan kambing 20 ekor','Kambing 20 ekor'],a:1,e:'$x+y$ menyatakan jumlah ekor.'},
 {t:'mcc',s:'Setiap musim cakalang, nelayan Teluk Tomini membawa hasil tangkapan ke Pasar Tilamuta. Seorang ibu membeli 3 kg ikan cakalang dan 2 kg ikan tuna dengan total Rp240.000. Ia percaya pada kejujuran sang nelayan, tetapi anaknya yang belajar di madrasah penasaran dan ingin menghitung harga masing-masing ikan. Harga sekilo cakalang dan harga sekilo tuna belum diketahui, sedangkan total belanja Rp240.000 telah tercatat. Allah berfirman bahwa segala sesuatu diciptakan menurut ukuran (QS. Al-Qamar: 49), maka menimbang dengan adil adalah bagian dari ibadah. Cinta pada laut Teluk Tomini juga berarti menangkap ikan secukupnya agar lestari. Tentukan besaran yang termasuk variabel dalam cerita ini.',q:'Pilih semua yang merupakan VARIABEL.',o:['Harga cakalang per kg','Harga tuna per kg','Total Rp240.000'],a:[0,1],e:'Rp240.000 adalah konstanta.'},
 {t:'mcc',s:'Dalam kehidupan warga Tilamuta, SPLDV muncul di banyak tempat: ketika pedagang menghitung belanja ikan dan sayur di pasar, ketika peternak mencocokkan jumlah ayam dan kambing dengan jumlah kakinya, dan ketika pengelola wisata pantai menghitung tiket biasa dan tiket VIP. Dalam semua kasus itu terdapat dua besaran yang belum diketahui dan dua informasi yang saling berkaitan. Seorang guru madrasah menekankan bahwa model yang tepat memerlukan ketelitian, seperti perintah Allah agar menegakkan timbangan dengan adil dan tidak mengurangi neraca. Ia mengingatkan bahwa variabel pada sistem ini berpangkat satu, dan bilangan yang nilainya tetap disebut konstanta. Pelajari ciri-ciri tersebut, lalu pilih semua pernyataan yang benar tentang SPLDV.',q:'Pilih semua pernyataan benar tentang SPLDV.',o:['Memiliki dua variabel','Terdiri dari dua persamaan linear','Variabel boleh berpangkat dua','Konstanta bernilai tetap'],a:[0,1,3],e:'SPLDV berpangkat satu.'}];
-function pstart(){S.bn=0;S.hp=3;S.st=0;S.bs=0;S.ps=0;S.pok=0;S.pAns=[];show('play');pr()}
+function pstart(){S.bn=0;S.hp=3;S.st=0;S.bs=0;S.ps=0;S.pok=0;S.pAns=[];S._prec=0;show('play');pr()}
 function pr(){clearInterval(S.ti);S.tm=90;S.ti=setInterval(()=>{if(S.tm>0&&--S.tm==0)say('Waktu habis! Tetap boleh menjawab ya 😊');ph()},1000);ph();$('pb').style.width=S.ps*10+'%';$('pn').style.display='none';runQ(PL[S.ps],$('pq'),(ok,ans)=>{(S.pAns=S.pAns||[])[S.ps]=[ok,ans];if(ok){S.pok++;S.st++;S.bs=Math.max(S.bs,S.st)}else{S.st=0;if(--S.hp<1){S.hp=3;say('Nyawa habis! Tenang, kuberi 3 nyawa baru. Semangat!')}}clearInterval(S.ti);if(ok&&S.tm>=45)S.bn+=2;ph();$('pn').style.display='inline-block';$('pn').textContent=S.ps==9?'Lihat Rekap ▶':'Lanjut ▶'})}
-function pnext(){if(S.ps<9){S.ps++;pr()}else{S.pd=true;kirimHasil('Bermain');confetti();$('pq').innerHTML=`<div class="center"><h2>🎉 Rekap Bermain</h2><p>Skor: <b>${S.pok*10}</b>/100 • Akurasi: <b>${S.pok*10}%</b></p><p>🔥 Streak terbaik: ${S.bs} • ⚡ Poin Cepat: ${S.bn}</p><p>${badgeStr()}</p><p>Menu BERLATIH terbuka!</p><button class="btn" onclick="show('menu')">Ke Menu</button></div>`;$('pn').style.display='none'}}
+function pnext(){if(S.ps<9){S.ps++;pr()}else{S.pd=true;S._prec=1;kirimHasil('Bermain');confetti();$('pq').innerHTML=`<div class="center"><h2>🎉 Rekap Bermain</h2><p>Skor: <b>${S.pok*10}</b>/100 • Akurasi: <b>${S.pok*10}%</b></p><p>🔥 Streak terbaik: ${S.bs} • ⚡ Poin Cepat: ${S.bn}</p><p>${badgeStr()}</p><p>Menu BERLATIH terbuka!</p><button class="btn" onclick="show('menu')">Ke Menu</button></div>`;$('pn').style.display='none'}}
 
 /* ===== BERLATIH ===== */
 const RL=[
@@ -371,7 +371,7 @@ function fcr(){let c=FC[S.fc],n=FC.length;$('kh').textContent='🃏 Kartu Ringka
 function dkr(){$('kh').textContent='📖 Kamus Mini';$('kb').innerHTML='<input id="dq" placeholder="Cari istilah..." oninput="dkf()"><div id="dl"></div>';dkf()}
 function dkf(){let q=$('dq').value.toLowerCase();$('dl').innerHTML=DK.filter(d=>(d[1]+d[2]).toLowerCase().includes(q)).map(d=>`<div class="dk2"><span>${d[0]}</span><div><b>${d[1]}</b><div class="sm">${d[2]}</div></div></div>`).join('')||'<p class="sm">Istilah tidak ditemukan.</p>'}
 function seq(h,qs,end){S.sq={h,qs,i:0,ok:0,end};sqr()}
-function sqr(){let s=S.sq;show('kon');$('kh').textContent=`${s.h} (${s.i+1}/${s.qs.length})`;$('kb').innerHTML='<div id="sqb"></div><div class="row"><button class="btn" id="sqn" style="display:none" onclick="sqn()">Lanjut ▶</button></div>';runQ(s.qs[s.i],$('sqb'),ok=>{if(ok)s.ok++;$('sqn').style.display='inline-block'})}
+function sqr(){let s=S.sq;s.ans=0;show('kon');$('kh').textContent=`${s.h} (${s.i+1}/${s.qs.length})`;$('kb').innerHTML='<div id="sqb"></div><div class="row"><button class="btn" id="sqn" style="display:none" onclick="sqn()">Lanjut ▶</button></div>';runQ(s.qs[s.i],$('sqb'),ok=>{s.ans=1;if(ok)s.ok++;$('sqn').style.display='inline-block'})}
 function sqn(){let s=S.sq;if(++s.i<s.qs.length)sqr();else s.end(s.ok)}
 const RM=[[{t:'mc',s:'Nelayan Tilamuta mencatat: hari ini 12 kg ikan, dan 1 kg = 1.000 g.',q:'Manakah yang tetap?',o:['12 kg ikan hari ini','1 kg = 1.000 g','Hasil tangkapan besok'],a:1,h:['Tanyakan: apakah nilainya bisa berbeda tiap hari?','Hasil tangkapan berubah, satuan kilogram tidak.'],e:'1 kg selalu 1.000 g.'},{t:'mc',s:'Persamaan belanja di toko madrasah: $2x+y=13000$.',q:'Konstanta pada persamaan itu adalah…',o:['$2$','$y$','$13000$'],a:2,h:['Konstanta tidak memuat huruf.','Cari bilangan yang berdiri sendiri.'],e:'13000 tidak memuat variabel.'}],
 [{t:'mc',s:'Toko menjual 2 pensil dan 1 buku seharga Rp13.000. Misalkan harga pensil $x$ dan buku $y$.',q:'Modelnya…',o:['$2x+y=13000$','$x+2y=13000$','$3xy=13000$'],a:0,h:['2 pensil berarti 2 kali harga pensil.','Banyak barang menjadi koefisien.'],e:'2 pensil = $2x$, 1 buku = $y$.'},{t:'mc',s:'Pak Budi menjual 4 kg apel dan 3 kg jeruk seharga Rp142.000. Apel $x$, jeruk $y$.',q:'Modelnya…',o:['$3x+4y=142000$','$4x+3y=142000$','$7xy=142000$'],a:1,h:['Apel 4 kg, jadi $4x$.','Jeruk 3 kg, jadi $3y$.'],e:'$4x+3y=142000$.'}],
@@ -444,7 +444,7 @@ function tchLogin(){let now=Date.now(),v=$('gpin').value.trim(),e=$('egp');
  if(v===tchPinGet()){tchTry=0;e.textContent='';$('gpin').value='';$('gpin').classList.remove('err');S.guru=1;S.gpin=v;show('dash');cloudPull(true);return}
  tchTry++;$('gpin').classList.add('err');$('gpin').value='';
  if(tchTry>=5){tchTry=0;tchLock=now+30000;e.textContent='PIN salah 5 kali. Dikunci selama 30 detik.'}else e.textContent='PIN salah. Silakan coba lagi.'}
-function tchOut(){S.guru=0;location.reload()}
+function tchOut(){S.guru=0;try{sessionStorage.removeItem(SESK)}catch(e){}location.reload()}
 function tchChangePin(){let p=prompt('Masukkan PIN baru (3–8 angka):');if(p==null)return;p=p.trim();if(!/^\d{3,8}$/.test(p)){alert('PIN harus 3–8 angka.');return}try{localStorage.setItem(PINK,p);alert('PIN berhasil diubah di perangkat ini. Jika memakai Google Sheets, ubah juga PIN_GURU di Code.gs lalu deploy ulang (Versi baru).')}catch(e){alert('PIN tidak dapat disimpan di perangkat ini.')}}
 
 /* ---- data & render ---- */
@@ -509,7 +509,7 @@ function buildHasil(menu){let B=menu=='Bermain',A=(B?S.pAns:S.rAns)||[],jw=[];
  let bn=B?S.pok:S.rok,o={action:'hasil',id:uid(),ts:new Date().toISOString(),nama:S.n,kelas:S.k,menu:menu,benar:bn,salah:10-bn,skor:B?S.pok*10:S.rpts,jawaban:jw};
  if(!B)o.lv=S.lv.slice();return o}
 /* hasil siswa masuk antrean lokal dulu, lalu dikirim; jika sinyal buruk akan dicoba lagi otomatis */
-function kirimHasil(menu){if(!GAS_ON()||!S.n)return;let q=obGet();q.push(buildHasil(menu));obSet(q);flushOutbox(true)}
+function kirimHasil(menu){if(!GAS_ON()||!S.n||window.__noSend)return;let q=obGet();q.push(buildHasil(menu));obSet(q);flushOutbox(true)}
 let obBusy=0;
 async function flushOutbox(notify){
  if(!GAS_ON()||obBusy||!obGet().length)return;obBusy=1;let sent=0,fail=0;
@@ -589,5 +589,59 @@ return L[Math.floor(Math.random()*L.length)]}
 /* ===== SAPAAN HALAMAN PANDUAN (3 TAMPILAN) ===== */
 function welTxt(i){var n=esc(S.n),W=[['Selamat datang, '+n+'! 👋','Camar sudah melapor ke semua ombak: ada murid keren yang mau belajar hari ini. Itu kamu. Senang kamu di sini 💙'],['Tenang, '+n+', kita jalan pelan-pelan ⛵','Tidak ada yang menyuruh kamu lari. Satu tahap selesai, tahap berikutnya terbuka. Camar sabar menunggu kok 🐢'],['Siap berlayar, '+n+'? ⚓','Kalau jawabanmu salah dulu, tidak apa-apa. Itu cara otak berlatih. Camar tetap bangga sama kamu 🐦']][i];
 return W[0]+'<div class="sm" style="font-weight:400;margin-top:4px">'+W[1]+'</div>'}
-show('cover');
+/* ===== PULIHKAN SESI SAAT REFRESH =====
+   Kondisi disimpan di sessionStorage (per tab, hilang bila tab ditutup -> aman di komputer bersama):
+   layar yang sedang dibuka, nomor soal/slide, skor, nyawa, jawaban yang sudah masuk, dsb.
+   Setelah refresh siswa kembali ke layar & nomor soal yang sama (bukan mengulang dari awal).
+   Menekan tombol Cover / Keluar menghapus sesi. */
+const SESK='mpi_sess';
+{const _k=kon,_r=remstart,_e=enrstart,_j=jrstart,_b=bdstart;       /* catat sub-layar pada layar "kon" */
+ kon=function(k){S._kon=k==0?'fc':'dk';_k(k)};remstart=function(){S._kon='rem';_r()};enrstart=function(){S._kon='enr';_e()};
+ jrstart=function(){S._kon='jr';_j()};bdstart=function(){S._kon='bd';_b()}}
+function snap(){try{
+ let on=document.querySelector('.scr.on'),id=on&&on.id;
+ if(id=='cover'){sessionStorage.removeItem(SESK);return}
+ if(S.guru&&id=='dash'){sessionStorage.setItem(SESK,JSON.stringify({r:'g',p:S.gpin||''}));return}
+ if(!S.n||!id||id=='form'||id=='dash')return;
+ let st={};Object.keys(S).forEach(k=>{if(k=='ti'||k=='guru'||k=='gpin'||k=='sq')return;if(typeof S[k]!='function')st[k]=S[k]});
+ let c={};
+ if(id=='kon'&&S.sq&&(S._kon=='rem'||S._kon=='enr'))c.sq={i:S.sq.i,ok:S.sq.ok,ans:S.sq.ans?1:0};
+ if(id=='refl'){c.rf=$('rf').value;c.an=$('an').checked}
+ sessionStorage.setItem(SESK,JSON.stringify({r:'s',n:S.n,k:S.k,scr:id,S:st,c:c}))}catch(e){}}
+function sess(id){snap()}
+setInterval(snap,1000);addEventListener('pagehide',snap);document.addEventListener('visibilitychange',snap);
+function resumeScr(id,c){
+ switch(id){
+  case 'guide':show('guide');gm(0);break;
+  case 'learn':show('learn');lr();break;
+  case 'play':{show('play');let tm=S.tm;
+   if(S._prec){window.__noSend=1;try{pnext()}finally{window.__noSend=0}}      /* rekap: tampilkan lagi tanpa kirim ulang */
+   else if(S.pAns&&S.pAns[S.ps])pnext();                                      /* soal ini sudah dijawab -> lanjut */
+   else{pr();if(tm>0&&tm<90)S.tm=tm}                                          /* soal yang sama, sisa waktu dipertahankan */
+   break}
+  case 'prac':{show('prac');if(S.rAns&&S.rAns[S.rs])rnext();else rr();break}
+  case 'refl':show('refl');$('hk').innerHTML='🌿 <b>Hikmah Hari Ini:</b> '+HK[1];$('rf').value=c.rf||'';$('an').checked=c.an!==false;break;
+  case 'rep':report();break;
+  case 'sim':simstart();break;
+  case 'map':mapstart();break;
+  case 'story':storystart();break;
+  case 'kon':{let t=S._kon;
+   if(t=='fc'){show('kon');fcr()}else if(t=='dk'){show('kon');dkr()}else if(t=='jr')jrstart();else if(t=='bd')bdstart();
+   else if(t=='rem'||t=='enr'){(t=='rem'?remstart:enrstart)();
+    if(S.sq&&c.sq){S.sq.i=c.sq.i;S.sq.ok=c.sq.ok;if(c.sq.ans)sqn();else sqr()}else if(!S.sq)show('menu')}
+   else show('menu');break}
+  default:show('menu')}}
+function restoreSess(){let o=null;try{o=JSON.parse(sessionStorage.getItem(SESK)||'null')}catch(e){}
+ if(!o)return false;
+ if(o.r=='g'){S.guru=1;S.gpin=o.p||'';show('dash');if(S.gpin)cloudPull(true);return true}
+ if(o.r=='s'&&o.n&&o.k){
+  if(o.S){Object.assign(S,o.S);if(!Array.isArray(S.learn))S.learn=[];if(!Array.isArray(S.lv))S.lv=[0,0,0]}
+  S.n=o.n;S.k=o.k;
+  if(!o.S){let r=dbGet()[skey(o.n,o.k)];                /* format sesi lama: pulihkan dari data lokal */
+   if(r){let ln=Math.round(r.lp/100*6);S.learn=[];for(let i=0;i<ln;i++)S.learn[i]=true;
+    S.pd=r.pp>=100;S._pfin=S.pd?1:0;S.pok=Math.round(r.ps/10);S.rdone=r.rp>=100?1:0;S._rfin=S.rdone;S.rpts=r.rs;S.lv=r.lv.slice()}}
+  try{resumeScr(o.scr||'menu',o.c||{})}catch(e){try{show('menu')}catch(e2){}}
+  return true}
+ return false}
+restoreSess()||show('cover');
 </script></body></html>
