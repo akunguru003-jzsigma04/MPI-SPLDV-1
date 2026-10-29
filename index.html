@@ -217,7 +217,7 @@ body:has(#cover.on){background:radial-gradient(circle at 20% 10%,#2563eb 0,#1e40
    Selama belum diganti, aplikasi tetap jalan seperti biasa (data hanya
    disimpan di perangkat), tanpa terhubung ke Google Sheets.
    ================================================================ */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxSf-ELhnvjuYj3HoyPR2CJGaAEBhYlYqIm2U5r7UpKPhwoqvv7KpCYR1c3jxj5X1MEqA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxeDJcWyFz6Oikc-Yqv1leMUvPNGm4nimB3YzzRWUaFoDk7haFRnwI99m5NAOle9NPcmw/exec";
 
 const $=id=>document.getElementById(id),S={n:'',k:'',learn:[],ls:0,ps:0,pok:0,pd:false,rs:0,rpts:0,lv:[0,0,0],rok:0,gi:0};
 const mj=e=>window.MathJax&&MathJax.typesetPromise&&MathJax.typesetPromise([e||document.body]).catch(()=>{});
@@ -473,8 +473,8 @@ function tchRender(){let db=dbGet(),cur=$('fCls').value,seen={},opts='<option va
  L.forEach((o,i)=>{let r=o.r,d=r.rp==100;
   h+=`<tr><td>${i+1}</td><td>${esc(r.n)}</td><td>${esc(r.k)}</td><td>${pg(r.lp)}</td><td>${pg(r.pp)}${r.pp==100?'<div class="sm">Skor '+r.ps+'/100</div>':''}</td><td>${pg(r.rp)}</td><td class="num">${d?r.rs:'–'}</td><td>${d?predikat(r.rs):'–'}</td><td>${d?`<span class="pill ${r.rs>=kkm?'ok':'no'}">${r.rs>=kkm?'Tuntas':'Belum Tuntas'}</span>`:'<span class="pill wt">Belum selesai</span>'}</td><td class="sm">${fdt(r.ts)}</td><td><button class="xb" title="Hapus siswa ini" onclick="tchDel(${i})">🗑</button></td></tr>`});
  $('dtb').innerHTML=h;$('bCsv').textContent='⬇ Ekspor CSV ('+L.length+')'}
-function tchDel(i){let db=dbGet(),k=tchCur[i],r=db[k];if(!r||!confirm('Hapus data '+r.n+' ('+r.k+')?'))return;delete db[k];dbSet(db);tchRender()}
-function tchReset(){if(!Object.keys(dbGet()).length)return;if(confirm('Hapus SEMUA data siswa di perangkat ini? Tindakan ini tidak dapat dibatalkan.')){dbSet({});tchRender()}}
+function tchDel(i){let db=dbGet(),k=tchCur[i],r=db[k];if(!r||!confirm('Hapus data '+r.n+' ('+r.k+')?'+(GAS_ON()?'\nData siswa ini juga akan dihapus dari sheet “Hasil” di Google Sheets.':'')))return;delete db[k];dbSet(db);tchRender();cloudDel(r.n,r.k)}
+function tchReset(){if(!Object.keys(dbGet()).length)return;if(confirm('Hapus SEMUA data siswa di perangkat ini? Tindakan ini tidak dapat dibatalkan.'+(GAS_ON()?'\nSeluruh isi sheet “Hasil” di Google Sheets juga akan dihapus.':''))){dbSet({});tchRender();cloudDel()}}
 
 /* ---- ekspor CSV ---- */
 function csvCell(v){v=v==null?'':String(v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}
@@ -540,6 +540,15 @@ async function cloudSyncSoal(){
  setCloud('⏳ Mengirim bank soal ke Google Sheets…');
  try{let j=await gasPost({action:'syncSoal',pin:S.gpin,rows:soalRows()});setCloud('☁️ Sheet “Data Soal” diperbarui: '+j.count+' soal • '+fdt(Date.now()))}
  catch(e){setCloud('⚠️ Gagal mengirim soal: '+e.message)}}
+/* ---- hapus data di sheet "Hasil" (tanpa nama = semua) supaya tidak muncul lagi saat Tarik dari Sheets ---- */
+async function cloudDel(nama,kelas,again){
+ if(!GAS_ON()||!S.gpin)return;
+ setCloud('⏳ Menghapus data di Google Sheets…');
+ try{let j=await gasPost({action:'hapus',pin:S.gpin,nama:nama||'',kelas:kelas||''});setCloud('☁️ Sheet “Hasil”: '+j.terhapus+' baris dihapus • '+fdt(Date.now()))}
+ catch(e){
+  if(/tidak cocok/.test(e.message)&&!again){let p=prompt('PIN Google Sheets tidak cocok dengan PIN login.\nMasukkan nilai PIN_GURU yang tertulis di Code.gs:');
+   if(p){S.gpin=p.trim();return cloudDel(nama,kelas,1)}}
+  setCloud('⚠️ Data di perangkat sudah dihapus, tetapi GAGAL dihapus di Google Sheets: '+e.message+' — data akan muncul lagi saat “Tarik dari Sheets”.')}}
 /* ---- tarik rekap dari sheet "Hasil" dan gabungkan ke dashboard ---- */
 async function cloudPull(auto,again){
  if(!GAS_ON()){if(auto)setCloud('ℹ️ GAS_URL belum diisi: data hanya tersimpan di perangkat ini.');else alert('GAS_URL belum diisi. Isi dulu di baris paling atas script index.html.');return}
