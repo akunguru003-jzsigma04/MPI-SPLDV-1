@@ -193,15 +193,24 @@ body:has(#cover.on){background:radial-gradient(circle at 20% 10%,#2563eb 0,#1e40
 <div class="card"><div class="dh"><div><h2>👩‍🏫 Dashboard Guru</h2><div class="sm">MPI SPLDV • Matematika Kelas X • data siswa dari perangkat ini &amp; Google Sheets</div><div class="sm" id="cloudSt"></div></div>
 <div class="row"><button class="btn" onclick="tchCSV()" id="bCsv">⬇ Ekspor CSV</button><button class="btn alt" onclick="$('impF').click()">📥 Impor Data</button><button class="btn alt" onclick="tchRender()">🔄 Segarkan</button><button class="btn alt" onclick="cloudPull()">☁️ Tarik dari Sheets</button><button class="btn alt" onclick="cloudSyncSoal()">📤 Kirim Soal ke Sheets</button><button class="btn alt" onclick="tchChangePin()">🔑 Ubah PIN</button><button class="btn alt" onclick="tchReset()">🗑 Hapus Semua</button><button class="btn alt" onclick="tchOut()">🚪 Keluar</button></div></div>
 <input type="file" id="impF" accept=".json,application/json" multiple style="display:none" onchange="tchImport(this)"></div>
+<div class="card noprint" id="jwCard"><h3>⏱ Jadwal Pengerjaan</h3>
+<div class="sm">Atur kapan siswa boleh mengerjakan <b>Bermain</b> &amp; <b>Berlatih</b> (jam <span id="jwZ"></span>). Menu lain tetap bebas. Jadwal bisa diganti kapan saja, misalnya tiap hari untuk kelas yang berbeda. Jadwal yang tanggalnya sudah lewat otomatis tidak berlaku.</div>
+<label class="sm" style="display:block;margin:8px 0"><input type="checkbox" id="jwA" style="width:auto"> <b>Aktifkan pembatasan waktu pengerjaan</b></label>
+<label class="sm" style="display:block;margin:8px 0"><input type="checkbox" id="jwS" style="width:auto"> <b>Batasi kesempatan Bermain &amp; Berlatih per siswa:</b> <input type="number" id="jwM" min="1" max="10" value="3" style="width:64px;display:inline-block"> kali per menu (satu kesempatan terpakai saat siswa menekan “Siap, mulai!”; refresh halaman tidak dihitung)</label>
+<label class="sm" style="display:block;margin:8px 0">⚖️ <b>Bobot Nilai Gabungan:</b> Berlatih <input type="number" id="jwW" min="0" max="100" value="70" style="width:64px;display:inline-block" oninput="$('jwWb').textContent=Math.max(0,Math.min(100,100-(parseInt(this.value)||0)))"> % + Bermain <b id="jwWb">30</b> % (memakai percobaan terbaik; Status Ketercapaian &amp; Predikat tetap dari nilai Berlatih)</label>
+<div class="tw"><table id="jwT"></table></div><span id="jwDl"></span>
+<div class="row"><button class="btn alt" onclick="jwAdd()">➕ Tambah Jadwal</button><button class="btn alt" onclick="jwToday()">📅 Pakai tanggal hari ini</button><button class="btn alt" onclick="jwNext()">➡️ Geser ke besok</button><button class="btn alt" onclick="jwClean()">🧹 Hapus yang sudah lewat</button><button class="btn" onclick="jwSimpan()">💾 Simpan Jadwal</button></div>
+<div class="dtl" style="margin-top:10px"><label>🔓 Izinkan ulang <select id="ulS"></select></label><select id="ulM"><option value="">Bermain &amp; Berlatih</option><option>Bermain</option><option>Berlatih</option></select><button class="btn alt" onclick="jwUlang()">Izinkan</button></div>
+<div class="sm" id="jwNow" style="margin-top:6px"></div><div class="sm" id="jwSt"></div></div>
 <div class="kpi">
 <div class="card"><span class="kl">👥 Total Siswa</span><span class="kv" id="kT">0</span><div class="sm" id="kTs"></div></div>
 <div class="card"><span class="kl">📊 Rata-rata Nilai</span><span class="kv" id="kA">–</span><div class="sm" id="kAs"></div></div>
-<div class="card"><span class="kl">✅ Ketuntasan</span><span class="kv" id="kK">–</span><div class="sm" id="kKs"></div></div>
+<div class="card"><span class="kl">✅ Ketercapaian KKTP</span><span class="kv" id="kK">–</span><div class="sm" id="kKs"></div></div>
 </div>
 <div class="card"><h3>Rekapitulasi Siswa</h3>
-<div class="dtl"><label>Kelas <select id="fCls" onchange="tchRender()"></select></label><input id="fQ" placeholder="🔎 Cari nama siswa…" oninput="tchRender()"><label>KKM <input id="fKkm" type="number" min="1" max="100" onchange="tchKkm()"></label></div>
+<div class="dtl"><label>Kelas <select id="fCls" onchange="tchRender()"></select></label><input id="fQ" placeholder="🔎 Cari nama siswa…" oninput="tchRender()"><label title="Kriteria Ketercapaian Tujuan Pembelajaran (ditentukan guru)">KKTP <input id="fKkm" type="number" min="1" max="100" onchange="tchKkm()"></label><span class="sm" id="kktpInfo"></span></div>
 <div class="tw"><table id="dtb"></table></div>
-<div class="sm" style="margin-top:8px">Nilai Akhir = poin Berlatih (maks. 100). Rata-rata dan ketuntasan dihitung dari siswa yang sudah menyelesaikan Berlatih. Data tersimpan otomatis di peramban perangkat ini; untuk menggabungkan data dari perangkat siswa lain, gunakan <b>Impor Data</b> (file .json dari tombol “Kirim Data ke Guru” pada laporan siswa).<br>☁️ Bila <code>GAS_URL</code> sudah diisi, hasil Bermain &amp; Berlatih setiap siswa otomatis terkirim ke Google Sheets (sheet “Hasil”). Tombol <b>Tarik dari Sheets</b> menggabungkan data dari semua perangkat ke dashboard ini.</div></div>
+<div class="sm" style="margin-top:8px">Nilai Akhir = poin Berlatih (maks. 100). Rata-rata dan ketercapaian KKTP dihitung dari siswa yang sudah menyelesaikan Berlatih. Data tersimpan otomatis di peramban perangkat ini; untuk menggabungkan data dari perangkat siswa lain, gunakan <b>Impor Data</b> (file .json dari tombol “Kirim Data ke Guru” pada laporan siswa).<br>☁️ Bila <code>GAS_URL</code> sudah diisi, hasil Bermain &amp; Berlatih setiap siswa otomatis terkirim ke Google Sheets (sheet “Hasil”). Tombol <b>Tarik dari Sheets</b> menggabungkan data dari semua perangkat ke dashboard ini.</div></div>
 </section>
 <div id="tb"><button onclick="S.mute=!S.mute;this.textContent=S.mute?'🔇':'🔊'">🔊</button><button onclick="document.body.classList.toggle('dk')">🌙</button><button onclick="fs(1)">A+</button><button onclick="fs(-1)">A-</button></div>
 <div id="gd"><div id="gb2"></div><span>🐦</span></div>
@@ -217,7 +226,10 @@ body:has(#cover.on){background:radial-gradient(circle at 20% 10%,#2563eb 0,#1e40
    Selama belum diganti, aplikasi tetap jalan seperti biasa (data hanya
    disimpan di perangkat), tanpa terhubung ke Google Sheets.
    ================================================================ */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxeDJcWyFz6Oikc-Yqv1leMUvPNGm4nimB3YzzRWUaFoDk7haFRnwI99m5NAOle9NPcmw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzeFyOfs8DHhyOYUTBq1wDIvQGeEbYCm1GGUvob6z-iRYddhtkhybyXAK8mQ_OmhH7UMQ/exec";
+
+/* Zona waktu untuk Jadwal Pengerjaan: 8 = WITA (Gorontalo), 7 = WIB, 9 = WIT */
+const ZONA_WAKTU_JAM = 8;
 
 const $=id=>document.getElementById(id),S={n:'',k:'',learn:[],ls:0,ps:0,pok:0,pd:false,rs:0,rpts:0,lv:[0,0,0],rok:0,gi:0};
 const mj=e=>window.MathJax&&MathJax.typesetPromise&&MathJax.typesetPromise([e||document.body]).catch(()=>{});
@@ -232,7 +244,7 @@ function tp(){modal(`<h3>🎯 Tujuan Pembelajaran</h3><ol><li>Peserta didik dapa
 function sub(){let n=$('nm').value.trim(),k=$('kl').value.trim(),ok=true;$('e1').textContent=n?'':'Nama wajib diisi.';$('e2').textContent=k?'':'Kelas wajib diisi.';$('nm').classList.toggle('err',!n);$('kl').classList.toggle('err',!k);if(n&&k){S.n=n;S.k=k;$('wel').innerHTML='Selamat datang, '+esc(n)+'! 👋<div class="sm" style="font-weight:400;margin-top:4px">Camar sudah melapor ke semua ombak: ada murid keren yang mau belajar hari ini. Itu kamu. Senang kamu di sini 💙</div>';gm(0);show('guide')}}
 const GD=['<h3>📘 Tentang media ini</h3>Media SPLDV untuk Kelas X. Kamu akan belajar variabel &amp; konstanta, bermain, lalu berlatih. Anggap saja ini petualangan kecil di pesisir, bukan ujian yang menyeramkan 🌊','<h3>🔒 Tahap Bertahap</h3>Belajar → Bermain → Berlatih. Menu terbuka setelah tahap sebelumnya selesai, seperti pos-pos di peta pelayaran 🗺️','<h3>👆 Cara Menjawab</h3>Pilih jawaban dengan klik/ketuk. Untuk seret-lepas: seret dengan mouse, atau <b>ketuk item lalu ketuk tujuan</b> di HP. Gampang kok, tinggal ketuk-ketuk 😄'];
 function gm(d){S.gi=Math.max(0,Math.min(2,S.gi+d));$('gs').innerHTML=GD[S.gi];if(S.n)$('wel').innerHTML=welTxt(S.gi);$('gb').style.width=(S.gi+1)/3*100+'%';$('gp').style.visibility=S.gi?'visible':'hidden';let l=S.gi==2;$('gn').textContent=l?'Masuk ke Menu Utama':'Selanjutnya ▶';$('gn').onclick=l?()=>show('menu'):()=>gm(1)}
-function menu(){let ld=S.learn.filter(Boolean).length==6,u=[1,ld,ld&&S.pd,1,1,1,!!S.rdone,!!S.rdone&&S.rpts>=71,1,1,1,1];$('mh').innerHTML=greet()+'<div class="sm">Kelas '+esc(S.k)+' • '+badgeStr()+'</div>';
+function menu(){let ld=S.learn.filter(Boolean).length==6,u=[1,ld,ld&&S.pd,1,1,1,!!S.rdone,!!S.rdone&&S.rpts>=71,1,1,1,1];$('mh').innerHTML=greet()+'<div class="sm">Kelas '+esc(S.k)+' • '+badgeStr()+'</div>'+jwBanner();
 $('mm').innerHTML=[['📖','BELAJAR','learn'],['🎮','BERMAIN','play'],['✍️','BERLATIH','prac'],['🔬','LABORATORIUM','sim'],['🃏','KARTU RINGKAS','fc'],['📖','KAMUS MINI','dk'],['🔁','REMEDIAL','rem'],['🚀','PENGAYAAN','enr'],['📝','JURNAL REFLEKSI','jr'],['🏅','RUANG LENCANA','bd'],['🗺️','PETA PETUALANGAN','map'],['📚','CERITA NELAYAN','story']].map((m,i)=>`<div class="card mc ${u[i]?'':'lk'}" onclick="go(${i})"><div style="font-size:2.5rem">${m[0]}</div><b>${m[1]}</b><div>${u[i]?'🔓 Terbuka':'🔒 Terkunci'}</div></div>`).join('')}
 function go(i){let ld=S.learn.filter(Boolean).length==6,m;
 if(i==1&&!ld)m='Selesaikan dulu menu <b>BELAJAR</b> (6 slide) untuk membuka BERMAIN.';
@@ -312,7 +324,7 @@ function rr(){$('rc').textContent=`Soal ${S.rs+1}/10 • Poin ${S.rpts}`;$('rb')
 function rnext(){if(S.rs<9){S.rs++;rr()}else{S.rdone=1;kirimHasil('Berlatih');confetti();$('hk').innerHTML='🌿 <b>Hikmah Hari Ini:</b> '+HK[1];show('refl')}}
 
 /* ===== LAPORAN ===== */
-function report(){S.fin=1;let p=S.rpts,pd=p>=86?'Sangat Baik (A)':p>=71?'Baik (B)':p>=56?'Cukup (C)':'Perlu Bimbingan (D)',mx=[24,40,36],pc=i=>Math.round(S.lv[i]/mx[i]*100);
+function report(){S.fin=1;let p=S.rpts,pd=predikat(p),mx=[24,40,36],pc=i=>Math.round(S.lv[i]/mx[i]*100);
 let w=pc(0)<70?'Level 1':pc(1)<70?'Level 2':pc(2)<70?'Level 3 (HOTS)':null;
 let rec=w?`Perlu penguatan pada ${w}: ulangi menu Belajar dan latihan membuat model dari cerita.`:'Penguasaan sangat baik; lanjutkan ke penyelesaian SPLDV dan masalah kontekstual lain.';
 $('rp').innerHTML=`<div class="card" id="rpt"><div class="center"><h2>Laporan Hasil Belajar</h2><div><b>MPI SPLDV</b> • Matematika Kelas X (Fase E)</div><div class="sm">Pengembang: Jefri Is. Zakaria, S.Pd – MAN 1 Boalemo • jefri_1986@madrasah.kemenag.go.id</div></div><hr>
@@ -441,19 +453,30 @@ const tchPinGet=()=>{try{return localStorage.getItem(PINK)||'003'}catch(e){retur
 let tchTry=0,tchLock=0;
 function tchLogin(){let now=Date.now(),v=$('gpin').value.trim(),e=$('egp');
  if(now<tchLock){e.textContent='Terlalu banyak percobaan. Coba lagi dalam '+Math.ceil((tchLock-now)/1000)+' detik.';return}
- if(v===tchPinGet()){tchTry=0;e.textContent='';$('gpin').value='';$('gpin').classList.remove('err');S.guru=1;S.gpin=v;show('dash');cloudPull(true);return}
+ if(v===tchPinGet()){tchTry=0;e.textContent='';$('gpin').value='';$('gpin').classList.remove('err');S.guru=1;S.gpin=v;show('dash');jwReset();cloudPull(true);return}
  tchTry++;$('gpin').classList.add('err');$('gpin').value='';
  if(tchTry>=5){tchTry=0;tchLock=now+30000;e.textContent='PIN salah 5 kali. Dikunci selama 30 detik.'}else e.textContent='PIN salah. Silakan coba lagi.'}
 function tchOut(){S.guru=0;try{sessionStorage.removeItem(SESK)}catch(e){}location.reload()}
 function tchChangePin(){let p=prompt('Masukkan PIN baru (3–8 angka):');if(p==null)return;p=p.trim();if(!/^\d{3,8}$/.test(p)){alert('PIN harus 3–8 angka.');return}try{localStorage.setItem(PINK,p);alert('PIN berhasil diubah di perangkat ini. Jika memakai Google Sheets, ubah juga PIN_GURU di Code.gs lalu deploy ulang (Versi baru).')}catch(e){alert('PIN tidak dapat disimpan di perangkat ini.')}}
 
 /* ---- data & render ---- */
-const tchKkmGet=()=>{try{let v=+localStorage.getItem(KKMK);return v>=1&&v<=100?v:71}catch(e){return 71}};
-function tchKkm(){let v=Math.round(+$('fKkm').value);if(!(v>=1&&v<=100))v=71;try{localStorage.setItem(KKMK,v)}catch(e){}tchRender()}
-const predikat=p=>p>=86?'Sangat Baik (A)':p>=71?'Baik (B)':p>=56?'Cukup (C)':'Perlu Bimbingan (D)';
+const tchKkmGet=()=>JW.kktp;
+function tchKkm(){let v=Math.round(+$('fKkm').value);if(!(v>=1&&v<=100))v=JW.kktp;JW.kktp=v;jwSave();tchRender();kktpSimpan()}
+/* KKTP disimpan di server agar predikat sama di semua perangkat (termasuk laporan siswa) */
+async function kktpSimpan(again){if(!GAS_ON()||!S.gpin)return;
+ try{await gasPost({action:'setKktp',pin:S.gpin,kktp:JW.kktp});setCloud('☁️ KKTP '+JW.kktp+' tersimpan dan berlaku di semua perangkat • '+fdt(Date.now()))}
+ catch(e){if(/tidak cocok/.test(e.message)&&!again){let pn=prompt('PIN Google Sheets tidak cocok dengan PIN login.\nMasukkan nilai PIN_GURU yang tertulis di Code.gs:');if(pn){S.gpin=pn.trim();return kktpSimpan(1)}}
+  setCloud('⚠️ KKTP belum tersimpan di Google Sheets: '+e.message)}}
+/* Predikat bergantung KKTP: di bawah KKTP = Perlu Bimbingan; KKTP s.d. 100 dibagi dua: 60% bawah = Baik, 40% atas = Istimewa (dibulatkan ke atas).
+   Contoh KKTP 76 -> 0–75 Perlu Bimbingan • 76–90 Baik • 91–100 Istimewa */
+const kktpBatas=()=>{let k=JW.kktp;return{k:k,i:Math.min(100,k+Math.ceil(((100-k)*3)/5))}};
+const predikat=p=>{let b=kktpBatas();return p<b.k?'Perlu Bimbingan':p>=b.i?'Istimewa':'Baik'};
+const kktpTeks=()=>{let b=kktpBatas();return 'Perlu Bimbingan: 0–'+(b.k-1)+' • '+(b.i>b.k?'Baik: '+b.k+'–'+(b.i-1)+' • ':'')+'Istimewa: '+b.i+'–100'};
 const fmt=(n,d)=>n.toLocaleString('id-ID',{maximumFractionDigits:d==null?1:d});
 const fdt=t=>new Date(t).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'});
 let tchCur=[];
+/* nilai gabungan = bobot Berlatih (JW.wl %) + Bermain (sisanya), memakai percobaan terbaik; hanya jika kedua menu selesai */
+const gab=r=>(r.pp==100&&r.rp==100)?Math.round((JW.wl/100*r.rs+(100-JW.wl)/100*r.ps)*10)/10:null;
 function tchList(){let db=dbGet(),c=$('fCls').value.toLowerCase(),q=$('fQ').value.trim().toLowerCase();
  return Object.keys(db).map(k=>({key:k,r:db[k]})).filter(o=>o.r&&o.r.n&&(!c||o.r.k.toLowerCase()==c)&&(!q||o.r.n.toLowerCase().includes(q)))
  .sort((a,b)=>a.r.k.localeCompare(b.r.k,'id',{numeric:true})||a.r.n.localeCompare(b.r.n,'id'))}
@@ -461,17 +484,17 @@ function tchRender(){let db=dbGet(),cur=$('fCls').value,seen={},opts='<option va
  Object.values(db).forEach(r=>{let l=r.k.toLowerCase();if(!seen[l]){seen[l]=r.k}});
  Object.keys(seen).sort((a,b)=>a.localeCompare(b,'id',{numeric:true})).forEach(l=>opts+=`<option value="${esc(seen[l]).replace(/"/g,'&quot;')}">${esc(seen[l])}</option>`);
  $('fCls').innerHTML=opts;$('fCls').value=cur;if($('fCls').value!=cur)$('fCls').value='';
- $('fKkm').value=tchKkmGet();
+ $('fKkm').value=tchKkmGet();if($('kktpInfo'))$('kktpInfo').textContent=kktpTeks();
  let kkm=tchKkmGet(),L=tchList();tchCur=L.map(o=>o.key);
  let fin=L.filter(o=>o.r.rp==100),avg=fin.length?fin.reduce((s,o)=>s+o.r.rs,0)/fin.length:null,tun=fin.filter(o=>o.r.rs>=kkm).length;
  $('kT').textContent=L.length;$('kTs').textContent=fin.length+' siswa sudah menyelesaikan Berlatih';
  $('kA').textContent=avg==null?'–':fmt(avg);$('kAs').textContent=avg==null?'Belum ada siswa yang selesai':'dari '+fin.length+' siswa (skala 0–100)';
- $('kK').textContent=fin.length?fmt(tun/fin.length*100,0)+'%':'–';$('kKs').textContent=fin.length?tun+' dari '+fin.length+' siswa mencapai KKM '+kkm:'KKM '+kkm;
+ $('kK').textContent=fin.length?fmt(tun/fin.length*100,0)+'%':'–';$('kKs').textContent=fin.length?tun+' dari '+fin.length+' siswa mencapai KKTP '+kkm:'KKTP '+kkm;
  const pg=p=>`<div class="pg">${p}%<div class="bar"><i style="width:${p}%"></i></div></div>`;
- let h='<tr><th>No</th><th>Nama</th><th>Kelas</th><th>📖 Belajar</th><th>🎮 Bermain</th><th>✍️ Berlatih</th><th>Nilai Akhir</th><th>Predikat</th><th>Status</th><th>Terakhir Aktif</th><th></th></tr>';
- if(!L.length)h+='<tr><td colspan="11" class="center sm" style="padding:18px">Belum ada data siswa. Data muncul otomatis saat siswa mengisi identitas dan belajar di perangkat ini, atau gunakan <b>Impor Data</b>.</td></tr>';
+ let h='<tr><th>No</th><th>Nama</th><th>Kelas</th><th>📖 Belajar</th><th>🎮 Bermain</th><th>✍️ Berlatih</th><th title="Bobot diatur di kartu Jadwal Pengerjaan; memakai percobaan terbaik">Nilai Gabungan</th><th>Nilai Akhir (Berlatih)</th><th>Predikat</th><th>Status</th><th>Terakhir Aktif</th><th></th></tr>';
+ if(!L.length)h+='<tr><td colspan="12" class="center sm" style="padding:18px">Belum ada data siswa. Data muncul otomatis saat siswa mengisi identitas dan belajar di perangkat ini, atau gunakan <b>Impor Data</b>.</td></tr>';
  L.forEach((o,i)=>{let r=o.r,d=r.rp==100;
-  h+=`<tr><td>${i+1}</td><td>${esc(r.n)}</td><td>${esc(r.k)}</td><td>${pg(r.lp)}</td><td>${pg(r.pp)}${r.pp==100?'<div class="sm">Skor '+r.ps+'/100</div>':''}</td><td>${pg(r.rp)}</td><td class="num">${d?r.rs:'–'}</td><td>${d?predikat(r.rs):'–'}</td><td>${d?`<span class="pill ${r.rs>=kkm?'ok':'no'}">${r.rs>=kkm?'Tuntas':'Belum Tuntas'}</span>`:'<span class="pill wt">Belum selesai</span>'}</td><td class="sm">${fdt(r.ts)}</td><td><button class="xb" title="Hapus siswa ini" onclick="tchDel(${i})">🗑</button></td></tr>`});
+  h+=`<tr><td>${i+1}</td><td>${esc(r.n)}</td><td>${esc(r.k)}</td><td>${pg(r.lp)}</td><td>${pg(r.pp)}${r.pp==100?'<div class="sm">Skor '+r.ps+'/100</div>':''}</td><td>${pg(r.rp)}</td><td class="num">${gab(r)==null?'–':fmt(gab(r))}</td><td class="num">${d?r.rs:'–'}</td><td>${d?predikat(r.rs):'–'}</td><td>${d?`<span class="pill ${r.rs>=kkm?'ok':'no'}">${r.rs>=kkm?'Tercapai':'Belum Tercapai'}</span>`:'<span class="pill wt">Belum selesai</span>'}</td><td class="sm">${fdt(r.ts)}</td><td><button class="xb" title="Hapus siswa ini" onclick="tchDel(${i})">🗑</button></td></tr>`});
  $('dtb').innerHTML=h;$('bCsv').textContent='⬇ Ekspor CSV ('+L.length+')'}
 function tchDel(i){let db=dbGet(),k=tchCur[i],r=db[k];if(!r||!confirm('Hapus data '+r.n+' ('+r.k+')?'+(GAS_ON()?'\nData siswa ini juga akan dihapus dari sheet “Hasil” di Google Sheets.':'')))return;delete db[k];dbSet(db);tchRender();cloudDel(r.n,r.k)}
 function tchReset(){if(!Object.keys(dbGet()).length)return;if(confirm('Hapus SEMUA data siswa di perangkat ini? Tindakan ini tidak dapat dibatalkan.'+(GAS_ON()?'\nSeluruh isi sheet “Hasil” di Google Sheets juga akan dihapus.':''))){dbSet({});tchRender();cloudDel()}}
@@ -479,8 +502,8 @@ function tchReset(){if(!Object.keys(dbGet()).length)return;if(confirm('Hapus SEM
 /* ---- ekspor CSV ---- */
 function csvCell(v){v=v==null?'':String(v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}
 function tchCSV(){let L=tchList(),kkm=tchKkmGet();if(!L.length){alert('Belum ada data untuk diekspor.');return}
- let H=['No','Nama','Kelas','Belajar (%)','Bermain (%)','Skor Bermain','Berlatih (%)','Level 1 (maks 24)','Level 2 (maks 40)','Level 3 (maks 36)','Nilai Akhir','Predikat','Status Ketuntasan (KKM '+kkm+')','Terakhir Aktif'],
- rows=L.map((o,i)=>{let r=o.r,d=r.rp==100;return[i+1,r.n,r.k,r.lp,r.pp,r.pp==100?r.ps:'',r.rp,d?r.lv[0]:'',d?r.lv[1]:'',d?r.lv[2]:'',d?r.rs:'',d?predikat(r.rs):'',d?(r.rs>=kkm?'Tuntas':'Belum Tuntas'):'Belum selesai',fdt(r.ts)]});
+ let H=['No','Nama','Kelas','Belajar (%)','Bermain (%)','Skor Bermain','Berlatih (%)','Level 1 (maks 24)','Level 2 (maks 40)','Level 3 (maks 36)','Nilai Akhir (Berlatih)','Nilai Gabungan ('+JW.wl+'% Berlatih + '+(100-JW.wl)+'% Bermain)','Predikat','Status Ketercapaian (KKTP '+kkm+')','Terakhir Aktif'],
+ rows=L.map((o,i)=>{let r=o.r,d=r.rp==100,g=gab(r);return[i+1,r.n,r.k,r.lp,r.pp,r.pp==100?r.ps:'',r.rp,d?r.lv[0]:'',d?r.lv[1]:'',d?r.lv[2]:'',d?r.rs:'',g==null?'':g,d?predikat(r.rs):'',d?(r.rs>=kkm?'Tercapai':'Belum Tercapai'):'Belum selesai',fdt(r.ts)]});
  let txt='\ufeffsep=;\r\n'+[H].concat(rows).map(r=>r.map(csvCell).join(';')).join('\r\n');
  let c=$('fCls').value;dl('Rekap_Nilai_SPLDV_'+(c?slug(c):'Semua_Kelas')+'_'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8',txt)}
 
@@ -499,17 +522,17 @@ const obSet=a=>{try{localStorage.setItem(OBX,JSON.stringify(a.slice(-100)))}catc
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const setCloud=t=>{let e=$('cloudSt');if(e)e.textContent=t};
 /* POST text/plain = "simple request" (tanpa preflight CORS) sehingga diterima GAS dari GitHub Pages */
-async function gasPost(o){
- let ac=new AbortController(),tm=setTimeout(()=>ac.abort(),25000);
+async function gasPost(o,ms){
+ let ac=new AbortController(),tm=setTimeout(()=>ac.abort(),ms||25000);
  try{let r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o),signal:ac.signal});
   let j=await r.json();if(!j||!j.ok)throw new Error((j&&j.error)||'Respons server tidak valid');return j}
  finally{clearTimeout(tm)}}
-function buildHasil(menu){let B=menu=='Bermain',A=(B?S.pAns:S.rAns)||[],jw=[];
- for(let i=0;i<10;i++){let a=A[i];jw.push(a?(a[0]?'✔ ':'✘ ')+(a[1]||''):'(tidak dijawab)')}
- let bn=B?S.pok:S.rok,o={action:'hasil',id:uid(),ts:new Date().toISOString(),nama:S.n,kelas:S.k,menu:menu,benar:bn,salah:10-bn,skor:B?S.pok*10:S.rpts,jawaban:jw};
+function buildHasil(menu,pt){let B=menu=='Bermain',A=(B?S.pAns:S.rAns)||[],jw=[],ans=0;
+ for(let i=0;i<10;i++){let a=A[i];if(a)ans++;jw.push(a?(a[0]?'✔ ':'✘ ')+(a[1]||''):(pt?'(tidak dijawab – waktu habis)':'(tidak dijawab)'))}
+ let bn=B?S.pok:S.rok,o={action:'hasil',id:uid(),ts:new Date().toISOString(),nama:S.n,kelas:S.k,menu:menu,benar:bn,salah:ans-bn,skor:B?S.pok*10:S.rpts,jawaban:jw};
  if(!B)o.lv=S.lv.slice();return o}
 /* hasil siswa masuk antrean lokal dulu, lalu dikirim; jika sinyal buruk akan dicoba lagi otomatis */
-function kirimHasil(menu){if(!GAS_ON()||!S.n||window.__noSend)return;let q=obGet();q.push(buildHasil(menu));obSet(q);flushOutbox(true)}
+function kirimHasil(menu,pt){if(!GAS_ON()||!S.n||window.__noSend)return;let q=obGet();q.push(buildHasil(menu,pt));obSet(q);flushOutbox(true)}
 let obBusy=0;
 async function flushOutbox(notify){
  if(!GAS_ON()||obBusy||!obGet().length)return;obBusy=1;let sent=0,fail=0;
@@ -517,7 +540,7 @@ async function flushOutbox(notify){
  finally{obBusy=0}
  if(notify){if(fail)say('📡 Sinyal kurang baik. Hasilmu tersimpan dan akan dikirim otomatis ke guru.');else if(sent)say('☁️ Hasil terkirim ke guru ✅')}}
 addEventListener('online',()=>flushOutbox(false));
-setTimeout(()=>{flushOutbox(false);initSoal()},3000);
+setTimeout(()=>{flushOutbox(false);initSoal();jwFetch()},3000);
 /* isi awal sheet "Data Soal" otomatis (tanpa PIN; backend mengabaikan bila sheet sudah berisi) */
 async function initSoal(){if(!GAS_ON())return;try{if(localStorage.getItem('mpi_soal_init')=='1')return}catch(e){}
  try{await gasPost({action:'initSoal',rows:soalRows()});try{localStorage.setItem('mpi_soal_init','1')}catch(e){}}catch(e){}}
@@ -549,16 +572,20 @@ async function cloudDel(nama,kelas,again){
   if(/tidak cocok/.test(e.message)&&!again){let p=prompt('PIN Google Sheets tidak cocok dengan PIN login.\nMasukkan nilai PIN_GURU yang tertulis di Code.gs:');
    if(p){S.gpin=p.trim();return cloudDel(nama,kelas,1)}}
   setCloud('⚠️ Data di perangkat sudah dihapus, tetapi GAGAL dihapus di Google Sheets: '+e.message+' — data akan muncul lagi saat “Tarik dari Sheets”.')}}
+/* siswa bisa mencoba beberapa kali: dashboard menampilkan percobaan TERBAIK per menu (selesai > sebagian, lalu skor tertinggi, lalu terbaru). Semua percobaan tetap ada di sheet "Hasil". */
+function bestRows(rows){let b={};rows.forEach(x=>{let k=skey(x.nama,x.kelas)+'|'+x.menu,sc=[(x.benar+x.salah)>=10?1:0,x.skor,x.ts],o=b[k];
+ if(!o||sc[0]>o.sc[0]||(sc[0]==o.sc[0]&&(sc[1]>o.sc[1]||(sc[1]==o.sc[1]&&sc[2]>o.sc[2]))))b[k]={x:x,sc:sc}});
+ return Object.values(b).map(o=>o.x).sort((a,b)=>a.ts-b.ts)}
 /* ---- tarik rekap dari sheet "Hasil" dan gabungkan ke dashboard ---- */
 async function cloudPull(auto,again){
  if(!GAS_ON()){if(auto)setCloud('ℹ️ GAS_URL belum diisi: data hanya tersimpan di perangkat ini.');else alert('GAS_URL belum diisi. Isi dulu di baris paling atas script index.html.');return}
  if(!S.gpin)return;
  setCloud('⏳ Mengambil data dari Google Sheets…');
  try{let j=await gasPost({action:'getHasil',pin:S.gpin}),db=dbGet(),n=0;
-  (j.rows||[]).sort((a,b)=>a.ts-b.ts).forEach(x=>{let B=x.menu=='Bermain',
-   r=cleanRec({n:x.nama,k:x.kelas,lp:100,pp:B?100:0,ps:B?x.skor:0,rp:B?0:100,rs:B?0:x.skor,lv:B?[0,0,0]:[x.l1,x.l2,x.l3],ts:x.ts});
+  bestRows(j.rows||[]).forEach(x=>{let B=x.menu=='Bermain',
+   r=cleanRec({n:x.nama,k:x.kelas,lp:100,pp:B?Math.min(100,(x.benar+x.salah)*10):0,ps:B?x.skor:0,rp:B?0:Math.min(100,(x.benar+x.salah)*10),rs:B?0:x.skor,lv:B?[0,0,0]:[x.l1,x.l2,x.l3],ts:x.ts});
    if(r){let k=skey(r.n,r.k);db[k]=mergeRec(db[k],r);n++}});
-  dbSet(db);tchRender();
+  dbSet(db);tchRender();await jwFetch();jwReset();tchRender();
   let st='☁️ Tersinkron: '+n+' hasil dimuat dari Google Sheets • '+fdt(Date.now());setCloud(st);
   if(!j.soalRows){try{let k=await gasPost({action:'syncSoal',pin:S.gpin,rows:soalRows()});setCloud(st+' • Data Soal dibuat ('+k.count+' soal)')}catch(e){}}
  }catch(e){
@@ -589,6 +616,101 @@ return L[Math.floor(Math.random()*L.length)]}
 /* ===== SAPAAN HALAMAN PANDUAN (3 TAMPILAN) ===== */
 function welTxt(i){var n=esc(S.n),W=[['Selamat datang, '+n+'! 👋','Camar sudah melapor ke semua ombak: ada murid keren yang mau belajar hari ini. Itu kamu. Senang kamu di sini 💙'],['Tenang, '+n+', kita jalan pelan-pelan ⛵','Tidak ada yang menyuruh kamu lari. Satu tahap selesai, tahap berikutnya terbuka. Camar sabar menunggu kok 🐢'],['Siap berlayar, '+n+'? ⚓','Kalau jawabanmu salah dulu, tidak apa-apa. Itu cara otak berlatih. Camar tetap bangga sama kamu 🐦']][i];
 return W[0]+'<div class="sm" style="font-weight:400;margin-top:4px">'+W[1]+'</div>'}
+/* ===== JADWAL PENGERJAAN (Bermain & Berlatih) ===== */
+const JWK='mpi_jadwal';
+let JW={aktif:false,rows:[],off:0,sekali:true,maks:3,wl:70,kktp:76},JWE=[],JWU=[],jwBusy=0;
+try{let c=JSON.parse(localStorage.getItem(JWK)||'null');if(c&&Array.isArray(c.rows))JW=Object.assign(JW,c)}catch(e){}
+const jwSave=()=>{try{localStorage.setItem(JWK,JSON.stringify(JW))}catch(e){}};
+const jwNow=()=>Date.now()+(JW.off||0);            /* jam server (dikoreksi), bukan jam HP siswa */
+const jwOn=()=>!!JW.aktif;
+const p2=n=>String(n).padStart(2,'0');
+const kn=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');   /* "X-1", "x 1", "X.1" dianggap sama */
+const jwZ=()=>ZONA_WAKTU_JAM==8?'WITA':ZONA_WAKTU_JAM==7?'WIB':ZONA_WAKTU_JAM==9?'WIT':'UTC+'+ZONA_WAKTU_JAM;
+function jwParts(ms){let d=new Date(ms+ZONA_WAKTU_JAM*3600000);return{d:d.getUTCFullYear()+'-'+p2(d.getUTCMonth()+1)+'-'+p2(d.getUTCDate()),t:p2(d.getUTCHours())+':'+p2(d.getUTCMinutes())}}
+function jwEpoch(tgl,jam){let a=tgl.split('-').map(Number),b=jam.split(':').map(Number);return Date.UTC(a[0],a[1]-1,a[2],b[0]-ZONA_WAKTU_JAM,b[1])}
+function jwRows(kelas){return(JW.rows||[]).filter(r=>!r.kelas||kn(r.kelas)==kn(kelas))}
+function jwStatus(kelas){let now=jwNow(),pt=jwParts(now),td=jwRows(kelas).filter(r=>r.tanggal==pt.d).sort((a,b)=>a.mulai<b.mulai?-1:1);
+ let op=td.find(r=>jwEpoch(r.tanggal,r.mulai)<=now&&now<jwEpoch(r.tanggal,r.selesai));
+ if(op)return{ok:true,end:jwEpoch(op.tanggal,op.selesai)};
+ let nx=td.find(r=>jwEpoch(r.tanggal,r.mulai)>now);
+ if(nx)return{ok:false,msg:`Pengerjaan untuk kelas ${esc(kelas)} <b>belum dibuka</b>.<div class="box">Jadwal hari ini: pukul <b>${nx.mulai}</b> – <b>${nx.selesai}</b> ${jwZ()}.</div>`};
+ if(td.length)return{ok:false,msg:`Waktu pengerjaan untuk kelas ${esc(kelas)} hari ini <b>sudah berakhir</b>.<div class="box">Hubungi gurumu bila perlu dibuka kembali.</div>`};
+ return{ok:false,msg:`Belum ada jadwal pengerjaan untuk kelas ${esc(kelas)} hari ini.<div class="box">Tunggu arahan gurumu.</div>`}}
+function jwBanner(){let o='';
+ if(jwOn()){let pt=jwParts(jwNow()),td=jwRows(S.k).filter(r=>r.tanggal==pt.d).sort((a,b)=>a.mulai<b.mulai?-1:1);
+  o+='<div class="sm">⏰ Pengerjaan Bermain &amp; Berlatih: '+(td.length?td.map(r=>r.mulai+'–'+r.selesai).join(', ')+' '+jwZ():'belum ada jadwal hari ini')+'</div>'}
+ if(JW.sekali!==false)o+='<div class="sm">☝️ Bermain &amp; Berlatih dapat dibuka maksimal <b>'+(JW.maks||3)+' kali</b> per siswa.</div>';
+ return o}
+async function jwFetch(){if(!GAS_ON())return;try{let j=await gasPost({action:'getJadwal'},6000);JW.aktif=!!j.jadwal.aktif;JW.sekali=j.jadwal.sekali!==false;JW.maks=Math.max(1,j.jadwal.maks||3);JW.wl=typeof j.jadwal.wl=='number'?j.jadwal.wl:70;JW.kktp=typeof j.jadwal.kktp=='number'?j.jadwal.kktp:76;JW.rows=j.jadwal.rows||[];JW.off=(j.now||Date.now())-Date.now();jwSave()}catch(e){}}
+function jwModal(h){$('modc').innerHTML='<h3>⏰ Waktu Pengerjaan</h3>'+h+'<div class="center"><button class="btn" onclick="$(\'mod\').classList.remove(\'on\')">Mengerti</button></div>';$('mod').classList.add('on')}
+async function jwGate(){S._jwEnd=0;S._jw5=0;await jwFetch();if(!jwOn())return true;let r=jwStatus(S.k);if(r.ok){S._jwEnd=r.end;return true}jwModal(r.msg);return false}
+function jwResume(id){if(!jwOn()){S._jwEnd=0;return true}let r=jwStatus(S.k);if(r.ok){S._jwEnd=r.end;return true}jwExpire(id);return false}
+const USK='mpi_used';
+const usedGet=()=>{try{return JSON.parse(localStorage.getItem(USK)||'{}')||{}}catch(e){return{}}};
+const usedSet=o=>{try{localStorage.setItem(USK,JSON.stringify(o))}catch(e){}};
+function jwKonfirm(menu){let m=JW.maks||3;return new Promise(res=>{window.__kf=v=>{$('mod').classList.remove('on');res(v)};
+ $('modc').innerHTML=`<h3>☝️ Kesempatan Terbatas</h3>Menu <b>${menu.toUpperCase()}</b> hanya bisa dibuka maksimal <b>${m} kali</b> per siswa. Setiap kali kamu menekan “Siap, mulai!”, satu kesempatan terpakai. Pastikan kamu siap, sinyal stabil, dan punya waktu sampai selesai.<div class="center" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn alt" onclick="__kf(false)">Nanti dulu</button><button class="btn" onclick="__kf(true)">Siap, mulai!</button></div>`;$('mod').classList.add('on')})}
+/* dicatat di server (berlaku lintas perangkat); bila server tak terjangkau, memakai catatan di perangkat ini */
+async function sekaliGate(menu){if(JW.sekali===false)return true;
+ let m=JW.maks||3,k=skey(S.n,S.k)+'|'+menu,u=usedGet(),n0=+u[k]||0;
+ if(!GAS_ON()&&n0>=m){sekaliTolak(menu,n0,m);return false}
+ if(!await jwKonfirm(menu))return false;
+ let tell=false,blok=false,ke=0;
+ if(GAS_ON()){try{let j=await gasPost({action:'mulai',nama:S.n,kelas:S.k,menu:menu},8000);tell=true;m=j.maks||m;if(j.boleh===false){blok=true;u[k]=j.terpakai||m}else ke=j.ke||0}catch(e){}}
+ if(!tell){if(n0>=m)blok=true;else ke=n0+1}
+ if(blok){usedSet(u);sekaliTolak(menu,u[k],m);return false}
+ u[k]=ke||n0+1;usedSet(u);
+ setTimeout(()=>say('☝️ Kesempatan ke-'+u[k]+' dari '+m),700);
+ return true}
+function sekaliTolak(menu,n,m){modal2(`Kesempatan menu <b>${menu.toUpperCase()}</b> sudah habis (<b>${n} dari ${m}</b> kali terpakai).<div class="box">Jika ada kendala (misalnya HP mati saat mengerjakan), minta gurumu membukakannya lagi.</div>`)}
+{const _p=pstart,_r=rstart,gt=(f,menu)=>function(){
+  if(!GAS_ON()&&!jwOn()&&JW.sekali===false){S._jwEnd=0;S._jw5=0;f();return}
+  if(jwBusy)return;jwBusy=1;
+  (async()=>{try{if(await jwGate()&&await sekaliGate(menu))f()}finally{jwBusy=0}})()};
+ pstart=gt(_p,'Bermain');rstart=gt(_r,'Berlatih')}
+function jwChip(t){let e=$('jwChip');if(!e){e=document.createElement('div');e.id='jwChip';e.style.cssText='position:fixed;top:8px;right:8px;z-index:60;background:#0f172a;color:#fff;padding:6px 12px;border-radius:999px;font:600 .85rem Poppins,sans-serif;box-shadow:0 2px 8px #0004;display:none';document.body.appendChild(e)}
+ if(t==null)e.style.display='none';else{e.textContent='⏳ Sisa waktu '+t;e.style.display='block'}}
+function jwTick(){let on=document.querySelector('.scr.on'),id=on&&on.id;
+ if(!S.n||!S._jwEnd||(id!='play'&&id!='prac')||(id=='play'&&S._prec)){jwChip(null);return}
+ let ms=S._jwEnd-jwNow();if(ms<=0){jwExpire(id);return}
+ let s=Math.ceil(ms/1000);jwChip(p2(Math.floor(s/60))+':'+p2(s%60));
+ if(ms<=300000&&!S._jw5){S._jw5=1;say('⏳ Sisa waktu pengerjaan 5 menit lagi!')}}
+setInterval(jwTick,1000);
+/* waktu habis: jawaban yang sudah masuk dikirim ke guru sebagai hasil sebagian, lalu siswa kembali ke menu */
+function jwExpire(id){S._jwEnd=0;S._jw5=0;jwChip(null);let n=0;
+ if(id=='play'){clearInterval(S.ti);n=(S.pAns||[]).filter(Boolean).length;if(n)kirimHasil('Bermain',1);S.pd=true;S._pfin=1}
+ else{n=(S.rAns||[]).filter(Boolean).length;if(n)kirimHasil('Berlatih',1);S.rdone=1;S._rfin=1}
+ show('menu');jwModal('⏰ <b>Waktu pengerjaan sudah habis.</b>'+(n?`<div class="box">Jawabanmu sampai soal ke-${n} sudah dikirim ke guru.</div>`:''))}
+/* ---- pengaturan jadwal oleh guru ---- */
+function jwReset(){JWE=JSON.parse(JSON.stringify(JW.rows||[]));if($('jwA'))$('jwA').checked=!!JW.aktif;if($('jwS'))$('jwS').checked=JW.sekali!==false;if($('jwM'))$('jwM').value=JW.maks||3;if($('jwW')){$('jwW').value=JW.wl;$('jwWb').textContent=100-JW.wl}jwRender()}
+function jwRender(){let e=$('jwT');if(!e)return;$('jwZ').textContent=jwZ();
+ let seen={};Object.values(dbGet()).forEach(r=>seen[r.k]=1);
+ $('jwDl').innerHTML='<datalist id="jwKls">'+Object.keys(seen).sort((a,b)=>a.localeCompare(b,'id',{numeric:true})).map(k=>`<option value="${esc(k).replace(/"/g,'&quot;')}">`).join('')+'</datalist>';
+ e.innerHTML='<tr><th>Kelas</th><th>Tanggal</th><th>Mulai</th><th>Selesai</th><th></th></tr>'+(JWE.length?JWE.map((r,i)=>`<tr><td><input list="jwKls" value="${esc(r.kelas).replace(/"/g,'&quot;')}" placeholder="kosong = semua kelas" onchange="JWE[${i}].kelas=this.value.trim()" style="min-width:120px"></td><td><input type="date" value="${r.tanggal}" onchange="JWE[${i}].tanggal=this.value"></td><td><input type="time" value="${r.mulai}" onchange="JWE[${i}].mulai=this.value"></td><td><input type="time" value="${r.selesai}" onchange="JWE[${i}].selesai=this.value"></td><td><button class="btn alt" onclick="JWE.splice(${i},1);jwRender()">🗑</button></td></tr>`).join(''):'<tr><td colspan="5" class="sm">Belum ada jadwal. Tekan “➕ Tambah Jadwal”.</td></tr>');
+ let sel=$('ulS'),cur=sel.value;JWU=Object.values(dbGet()).sort((a,b)=>(a.k+a.n).localeCompare(b.k+b.n,'id',{numeric:true}));
+ sel.innerHTML=JWU.length?JWU.map((r,i)=>`<option value="${i}">${esc(r.n)} (${esc(r.k)})</option>`).join(''):'<option value="">(belum ada siswa)</option>';if(cur!==''&&JWU[cur])sel.value=cur;
+ let p=jwParts(jwNow());$('jwNow').textContent='Waktu sekarang: '+p.d+' '+p.t+' '+jwZ()}
+async function jwUlang(again){let i=$('ulS').value;if(i===''||!JWU[i])return;let u=JWU[i],m=$('ulM').value,loc=usedGet();
+ ['Bermain','Berlatih'].forEach(x=>{if(!m||m==x)delete loc[skey(u.n,u.k)+'|'+x]});usedSet(loc);
+ if(!GAS_ON()){$('jwSt').textContent='✅ '+u.n+' boleh mengulang di perangkat ini.';return}
+ if(!S.gpin)return;
+ try{let j=await gasPost({action:'ulang',pin:S.gpin,nama:u.n,kelas:u.k,menu:m});$('jwSt').textContent='🔓 '+u.n+' ('+u.k+') boleh membuka '+j.menu+' lagi.'}
+ catch(e){if(/tidak cocok/.test(e.message)&&!again){let pn=prompt('PIN Google Sheets tidak cocok dengan PIN login.\nMasukkan nilai PIN_GURU yang tertulis di Code.gs:');if(pn){S.gpin=pn.trim();return jwUlang(1)}}
+  $('jwSt').textContent='⚠️ Gagal mengizinkan ulang: '+e.message}}
+function jwAdd(){JWE.push({kelas:'',tanggal:jwParts(jwNow()).d,mulai:'07:30',selesai:'09:00'});jwRender()}
+function jwToday(){let d=jwParts(jwNow()).d;JWE.forEach(r=>r.tanggal=d);jwRender()}
+function jwNext(){JWE.forEach(r=>{let a=(r.tanggal||jwParts(jwNow()).d).split('-').map(Number),d=new Date(Date.UTC(a[0],a[1]-1,a[2]+1));r.tanggal=d.getUTCFullYear()+'-'+p2(d.getUTCMonth()+1)+'-'+p2(d.getUTCDate())});jwRender()}
+function jwClean(){let d=jwParts(jwNow()).d;JWE=JWE.filter(r=>r.tanggal>=d);jwRender()}
+async function jwSimpan(again){let a=$('jwA').checked,rows=JWE.map(r=>({kelas:(r.kelas||'').trim(),tanggal:r.tanggal,mulai:r.mulai,selesai:r.selesai}));
+ for(let r of rows){if(!/^\d{4}-\d{2}-\d{2}$/.test(r.tanggal||'')||!r.mulai||!r.selesai){alert('Lengkapi tanggal, jam mulai, dan jam selesai pada semua baris.');return}
+  if(r.mulai>=r.selesai){alert('Jam selesai harus setelah jam mulai ('+(r.kelas||'semua kelas')+').');return}}
+ if(a&&!rows.length&&!again&&!confirm('Pembatasan aktif tetapi belum ada jadwal: semua siswa akan terkunci. Lanjutkan?'))return;
+ JW.aktif=a;JW.sekali=$('jwS').checked;JW.maks=Math.max(1,Math.min(10,parseInt($('jwM').value)||3));JW.wl=Math.max(0,Math.min(100,parseInt($('jwW').value)));if(isNaN(JW.wl))JW.wl=70;JW.rows=rows;jwSave();tchRender();
+ if(!GAS_ON()){$('jwSt').textContent='✅ Jadwal tersimpan di perangkat ini. Isi GAS_URL agar jadwal berlaku di perangkat siswa.';return}
+ if(!S.gpin)return;$('jwSt').textContent='⏳ Menyimpan jadwal ke Google Sheets…';
+ try{await gasPost({action:'setJadwal',pin:S.gpin,aktif:a,sekali:JW.sekali,maks:JW.maks,wl:JW.wl,kktp:JW.kktp,rows:rows});$('jwSt').textContent='☁️ Jadwal tersimpan dan berlaku di semua perangkat • '+fdt(Date.now())}
+ catch(e){if(/tidak cocok/.test(e.message)&&!again){let pn=prompt('PIN Google Sheets tidak cocok dengan PIN login.\nMasukkan nilai PIN_GURU yang tertulis di Code.gs:');if(pn){S.gpin=pn.trim();return jwSimpan(1)}}
+  $('jwSt').textContent='⚠️ Jadwal belum tersimpan di Google Sheets: '+e.message}}
 /* ===== PULIHKAN SESI SAAT REFRESH =====
    Kondisi disimpan di sessionStorage (per tab, hilang bila tab ditutup -> aman di komputer bersama):
    layar yang sedang dibuka, nomor soal/slide, skor, nyawa, jawaban yang sudah masuk, dsb.
@@ -614,12 +736,12 @@ function resumeScr(id,c){
  switch(id){
   case 'guide':show('guide');gm(0);break;
   case 'learn':show('learn');lr();break;
-  case 'play':{show('play');let tm=S.tm;
+  case 'play':{show('play');if(!S._prec&&!jwResume('play'))break;let tm=S.tm;
    if(S._prec){window.__noSend=1;try{pnext()}finally{window.__noSend=0}}      /* rekap: tampilkan lagi tanpa kirim ulang */
    else if(S.pAns&&S.pAns[S.ps])pnext();                                      /* soal ini sudah dijawab -> lanjut */
    else{pr();if(tm>0&&tm<90)S.tm=tm}                                          /* soal yang sama, sisa waktu dipertahankan */
    break}
-  case 'prac':{show('prac');if(S.rAns&&S.rAns[S.rs])rnext();else rr();break}
+  case 'prac':{show('prac');if(!jwResume('prac'))break;if(S.rAns&&S.rAns[S.rs])rnext();else rr();break}
   case 'refl':show('refl');$('hk').innerHTML='🌿 <b>Hikmah Hari Ini:</b> '+HK[1];$('rf').value=c.rf||'';$('an').checked=c.an!==false;break;
   case 'rep':report();break;
   case 'sim':simstart();break;
@@ -633,7 +755,7 @@ function resumeScr(id,c){
   default:show('menu')}}
 function restoreSess(){let o=null;try{o=JSON.parse(sessionStorage.getItem(SESK)||'null')}catch(e){}
  if(!o)return false;
- if(o.r=='g'){S.guru=1;S.gpin=o.p||'';show('dash');if(S.gpin)cloudPull(true);return true}
+ if(o.r=='g'){S.guru=1;S.gpin=o.p||'';show('dash');jwReset();if(S.gpin)cloudPull(true);return true}
  if(o.r=='s'&&o.n&&o.k){
   if(o.S){Object.assign(S,o.S);if(!Array.isArray(S.learn))S.learn=[];if(!Array.isArray(S.lv))S.lv=[0,0,0]}
   S.n=o.n;S.k=o.k;
